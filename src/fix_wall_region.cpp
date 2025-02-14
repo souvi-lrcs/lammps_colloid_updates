@@ -145,6 +145,7 @@ void FixWallRegion::init()
     if (flagall) error->all(FLERR, "Fix wall/region colloid requires only extended particles");
   }
 
+  dynflag = region->dynamic_check(); //Set flag if region is dynamic
   // setup coefficients for each style
 
   if (style == LJ93) {
@@ -352,6 +353,17 @@ double FixWallRegion::compute_vector(int n)
     eflag = 1;
   }
   return ewall_all[n + 1];
+}
+
+double FixWallRegion::compute_volume()
+{
+  //Call shape_update before calculating shape volume 
+  // got to implement a check to call volume calculation only when varshape flag is active
+  double reg_vol;
+  reg_vol = -1;
+  region->shape_update();
+  reg_vol = region->volume_calc();
+  return reg_vol;
 }
 
 /* ----------------------------------------------------------------------
